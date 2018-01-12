@@ -1,3 +1,4 @@
+print('=============================================================')
 import numpy as np
 import keras
 from PIL import Image
@@ -32,7 +33,7 @@ with open('D:/samochody/IMG0.txt') as labels_file:
 print('Loaded', len(labels), 'labels.                               ')
 
 #(x_train, y_train), (x_test, y_test) = keras.datasets.cifar10.load_data()
-x_train = np.reshape(np.array(data), (max_size, height, width, 1))
+x_train = np.reshape(np.array(data) / 255.0, (max_size, height, width, 1))
 y_train = keras.utils.to_categorical(np.reshape(np.array(labels), (max_size, 1)), num_classes=2)
 print('x_train shape:', x_train.shape)
 print('y_train shape:', y_train.shape)
@@ -50,14 +51,18 @@ model.add(keras.layers.Conv2D(filters=32,
 model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))
 # model.add(keras.layers.Flatten())
 model.add(keras.layers.GlobalAveragePooling2D())
-model.add(keras.layers.Dense(units=64, activation='relu'))
+model.add(keras.layers.Dense(units=32, activation='relu'))
 model.add(keras.layers.Dense(units=2, activation='softmax'))
 # model.add(keras.layers.Dense(units=64, activation='relu', input_dim=100))
 # model.add(keras.layers.Dense(units=10, activation='softmax'))
 
 model.compile(loss=keras.losses.categorical_crossentropy,
-              optimizer=keras.optimizers.SGD(lr=0.005, momentum=0.9, nesterov=True))
+              # optimizer=keras.optimizers.SGD(lr=0.005, momentum=0.9, nesterov=True),
+              optimizer=keras.optimizers.Adam(lr=0.001),
+              metrics=['accuracy'])
 
-model.fit(x=x_train, y=y_train, epochs=2, batch_size=4)
+model.fit(x=x_train, y=y_train, epochs=2, batch_size=2)
 
 # loss_and_metrics = model.evaluate(x_test, y_test, batch_size=128)
+
+print('=============================================================')
