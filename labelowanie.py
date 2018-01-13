@@ -13,14 +13,12 @@ gen = (i for i in range(starting_number, max_number + 1))
 def callback_left(event):
     coords[0] = event.x
     coords[1] = event.y
-    print('clicked left at:', coords[0], coords[1])
     canvas.coords(rect, *coords)
     canvas.coords(point, coords[0], coords[1], coords[0], coords[1])
 
 def callback_right(event):
     coords[2] = event.x
     coords[3] = event.y
-    print('clicked right at:', coords[2], coords[3])
     canvas.coords(rect, *coords)
 
 def callback_button():
@@ -62,8 +60,8 @@ main_panel.pack()
 
 canvas = tk.Canvas(main_panel)
 canvas.pack()
-canvas.bind('<Button-1>', callback_left)
-canvas.bind('<Button-3>', callback_right)
+canvas.bind('<B1-Motion>', callback_left)
+canvas.bind('<B3-Motion>', callback_right)
 main_panel.add(canvas, width=width, height=height)
 image_on_canvas = canvas.create_image(0, 0, anchor=tk.NW, image=img)
 rect = canvas.create_rectangle(0, 0, 0, 0, outline='yellow')
@@ -77,7 +75,7 @@ right_panel.add(entry)
 button = tk.Button(right_panel, text='nastepne', command=callback_button)
 right_panel.add(button)
 
-right_panel.add(tk.Label(right_panel, text=''))
+right_panel.add(tk.Label(right_panel, text='v0.2'))
 main_panel.add(right_panel)
 
 root.mainloop()
