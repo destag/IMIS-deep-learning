@@ -15,6 +15,7 @@ def callback_left(event):
     coords[1] = event.y
     print('clicked left at:', coords[0], coords[1])
     canvas.coords(rect, *coords)
+    canvas.coords(point, coords[0], coords[1], coords[0], coords[1])
 
 def callback_right(event):
     coords[2] = event.x
@@ -65,7 +66,8 @@ canvas.bind('<Button-1>', callback_left)
 canvas.bind('<Button-3>', callback_right)
 main_panel.add(canvas, width=width, height=height)
 image_on_canvas = canvas.create_image(0, 0, anchor=tk.NW, image=img)
-rect = canvas.create_rectangle(0, 0, 0, 0)
+rect = canvas.create_rectangle(0, 0, 0, 0, outline='yellow')
+point = canvas.create_oval(0, 0, 0, 0, width=3, outline='blue')
 
 right_panel = tk.PanedWindow(orient=tk.VERTICAL)
 right_panel.add(tk.Label(right_panel, text='numer rejestracyjny'))
