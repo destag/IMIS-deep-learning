@@ -25,9 +25,6 @@ def callback_button():
     global img
     license_plate = entry.get().upper()
     entry.delete(0, 'end')
-    img = Image.open(directory_path + 'IMG' + str(next(gen)) + '.jpg').convert('L').resize((width, height), Image.ANTIALIAS)
-    img = ImageTk.PhotoImage(img)
-    canvas.itemconfigure(image_on_canvas, image=img)
     df = pd.DataFrame(columns=('license_plate', 'x', 'y', 'w', 'h'),
                       data={'license_plate': [license_plate],
                             'x': coords[0],
@@ -39,11 +36,23 @@ def callback_button():
     else:
         df.to_csv(directory_path + 'IMG0.csv', encoding='utf-8', index=False, mode='a', header=False)
 
+    try:
+        n = str(next(gen))
+    except StopIteration:
+        root.destroy()
+        print('...')
+        return
+
+    root.title('IMG' + n)
+    img = Image.open(directory_path + 'IMG' + n + '.jpg').convert('L').resize((width, height), Image.ANTIALIAS)
+    img = ImageTk.PhotoImage(img)
+    canvas.itemconfigure(image_on_canvas, image=img)
+
 root = tk.Tk()
-root.title('labelowanie')
-img = Image.open(directory_path + 'IMG' + str(next(gen)) + '.jpg').convert('L').resize((width, height), Image.ANTIALIAS)
+n =  str(next(gen))
+root.title('IMG' + n)
+img = Image.open(directory_path + 'IMG' + n + '.jpg').convert('L').resize((width, height), Image.ANTIALIAS)
 img = ImageTk.PhotoImage(img)
-print(img)
 
 main_panel = tk.PanedWindow()
 main_panel.pack()
