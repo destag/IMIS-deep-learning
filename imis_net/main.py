@@ -1,8 +1,9 @@
-print('=============================================================')
+print('=================================================================')
 import numpy as np
 import keras
-from PIL import Image
+from PIL import Image, ImageTk
 import pandas as pd
+import tkinter as tk
 
 from time import time
 
@@ -10,37 +11,27 @@ data = []
 labels = []
 width = 800
 height = 600
-max_size = 3
-
-# img = Image.open('D:/samochody/IMG1.jpg').convert('L').resize((800,600), Image.ANTIALIAS)
-# img.show()
-# print(np.asarray(img, dtype='float16'))
-
-# data_directory = input()
-# exit()
+max_size = 102
 
 for i in range(1, max_size + 1):
-    print(f'Loading data. {i}/{max_size}', end='\r')
+    print(f'Loading data. {i}/{max_size}', end='')
     img = Image.open('D:/samochody/IMG' + str(i) + '.jpg').convert('L').resize((width, height), Image.ANTIALIAS)
     data.append(np.asarray(img, dtype='float32'))
+    print('', end='\r')
 print('Loaded', len(data), 'images.                                 ')
 
 print('Loading labels.', end='\r')
 dataframe = pd.read_csv('D:/samochody/IMG0.csv', header=0)
-# with open('D:/samochody/IMG0.txt') as labels_file:
-#     for idx, line in enumerate(labels_file):
-#         if idx >= max_size:
-#             break
-#         labels.append(int(line[0]))
 print('Loaded', len(dataframe), 'labels.                               ')
 
 #(x_train, y_train), (x_test, y_test) = keras.datasets.cifar10.load_data()
 x_train = np.reshape(np.array(data) / 255.0, (max_size, height, width, 1))
 # y_train = keras.utils.to_categorical(np.reshape(np.array(labels), (max_size, 1)), num_classes=2)
-y_train = dataframe.values[:, 1:]
+y_train = dataframe.values[:max_size, 1:]
 print('x_train shape:', x_train.shape)
 print('y_train shape:', y_train.shape)
-print('=============================================================')
+
+print('=================================================================')
 
 model = keras.models.Sequential()
 
@@ -64,8 +55,32 @@ model.compile(loss=keras.losses.mean_squared_error,
               optimizer=keras.optimizers.Adam(lr=0.001),
               metrics=['accuracy'])
 
-model.fit(x=x_train, y=y_train, epochs=10, batch_size=3)
+print(model.summary())
+
+print('=================================================================')
+
+model.fit(x=x_train, y=y_train, epochs=10, batch_size=2)
 
 # loss_and_metrics = model.evaluate(x_test, y_test, batch_size=128)
 
-print('=============================================================')
+print('=================================================================')
+
+x_pred = np.reshape(np.array(np.asarray(img, dtype='float32')) / 255.0, (1, height, width, 1))
+y_pred = model.predict(x_pred, batch_size=1)
+print(y_pred[0])
+root = tk.Tk()
+main_panel = tk.PanedWindow()
+main_panel.pack()
+canvas = tk.Canvas(main_panel)
+main_panel.add(canvas, width=width, height=height)
+img = Image.open('D:/samochody/IMG' + str(max_size + 1) + '.jpg').convert('L').resize((width, height), Image.ANTIALIAS)
+img = ImageTk.PhotoImage(img)
+canvas.create_image(0, 0, anchor=tk.NW, image=img)
+canvas.create_rectangle(y_pred[0][0],
+                        y_pred[0][1],
+                        y_pred[0][0] + y_pred[0][2],
+                        y_pred[0][1] + y_pred[0][3],
+                        outline='green')
+root.mainloop()
+
+print('=================================================================')
