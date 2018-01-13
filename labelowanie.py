@@ -1,0 +1,70 @@
+import tkinter as tk
+from PIL import Image, ImageTk
+import pandas as pd
+
+directory_path = 'D:/samochody/'
+coords = [0, 0, 0, 0]
+width, height = 800, 600
+starting_number = 1
+make_new_csv = False if starting_number > 1 else True
+gen = (i for i in range(starting_number, 82))
+
+def callback_left(event):
+    coords[0] = event.x
+    coords[1] = event.y
+    print('clicked left at:', coords[0], coords[1])
+    canvas.coords(rect, *coords)
+
+def callback_right(event):
+    coords[2] = event.x
+    coords[3] = event.y
+    print('clicked right at:', coords[2], coords[3])
+    canvas.coords(rect, *coords)
+
+def callback_button():
+    global img
+    license_plate = entry.get().upper()
+    entry.delete(0, 'end')
+    img = Image.open(directory_path + 'IMG' + str(next(gen)) + '.jpg').convert('L').resize((width, height), Image.ANTIALIAS)
+    img = ImageTk.PhotoImage(img)
+    canvas.itemconfigure(image_on_canvas, image=img)
+    df = pd.DataFrame(columns=('license_plate', 'x', 'y', 'w', 'h'),
+                      data={'license_plate': [license_plate],
+                            'x': coords[0],
+                            'y': coords[1],
+                            'w': coords[2] - coords[0],
+                            'h': coords[3] - coords[1]})
+    if make_new_csv:
+        df.to_csv(directory_path + 'IMG0.csv', encoding='utf-8', index=False)
+    else:
+        df.to_csv(directory_path + 'IMG0.csv', encoding='utf-8', index=False, mode='a', header=False)
+
+root = tk.Tk()
+root.title('labelowanie')
+img = Image.open(directory_path + 'IMG' + str(next(gen)) + '.jpg').convert('L').resize((width, height), Image.ANTIALIAS)
+img = ImageTk.PhotoImage(img)
+print(img)
+
+main_panel = tk.PanedWindow()
+main_panel.pack()
+
+canvas = tk.Canvas(main_panel)
+canvas.pack()
+canvas.bind('<Button-1>', callback_left)
+canvas.bind('<Button-3>', callback_right)
+main_panel.add(canvas, width=width, height=height)
+image_on_canvas = canvas.create_image(0, 0, anchor=tk.NW, image=img)
+rect = canvas.create_rectangle(0, 0, 0, 0)
+
+right_panel = tk.PanedWindow(orient=tk.VERTICAL)
+right_panel.add(tk.Label(right_panel, text='numer rejestracyjny'))
+entry = tk.Entry(right_panel)
+right_panel.add(entry)
+
+button = tk.Button(right_panel, text='nastepne', command=callback_button)
+right_panel.add(button)
+
+right_panel.add(tk.Label(right_panel, text=''))
+main_panel.add(right_panel)
+
+root.mainloop()
