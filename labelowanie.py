@@ -6,8 +6,9 @@ directory_path = 'D:/samochody/'
 coords = [0, 0, 0, 0]
 width, height = 800, 600
 starting_number = 1
+max_number = 81
 make_new_csv = False if starting_number > 1 else True
-gen = (i for i in range(starting_number, 82))
+gen = (i for i in range(starting_number, max_number + 1))
 
 def callback_left(event):
     coords[0] = event.x
@@ -22,7 +23,7 @@ def callback_right(event):
     canvas.coords(rect, *coords)
 
 def callback_button():
-    global img
+    global img, make_new_csv
     license_plate = entry.get().upper()
     entry.delete(0, 'end')
     df = pd.DataFrame(columns=('license_plate', 'x', 'y', 'w', 'h'),
@@ -33,6 +34,7 @@ def callback_button():
                             'h': coords[3] - coords[1]})
     if make_new_csv:
         df.to_csv(directory_path + 'IMG0.csv', encoding='utf-8', index=False)
+        make_new_csv = False
     else:
         df.to_csv(directory_path + 'IMG0.csv', encoding='utf-8', index=False, mode='a', header=False)
 
