@@ -5,7 +5,7 @@ import pandas as pd
 directory_path = 'D:/samochody/'
 coords = [0, 0, 0, 0]
 width, height = 800, 600
-starting_number = 1
+starting_number = 402
 max_number = 566
 make_new_csv = False if starting_number > 1 else True
 gen = (i for i in range(starting_number, max_number + 1))
