@@ -13,16 +13,17 @@ labels = []
 width = 800
 height = 600
 max_size = 150
+directory_path = 'D:/samochody'
 
 for i in range(1, max_size + 1):
     print(f'Loading data. {i}/{max_size}', end='')
-    img = Image.open('D:/samochody/IMG' + str(i) + '.jpg').resize((width, height), Image.ANTIALIAS)
+    img = Image.open(directory_path + '/IMG' + str(i) + '.jpg').resize((width, height), Image.ANTIALIAS)
     data.append(np.asarray(img, dtype='float32'))
     print('', end='\r')
 print('Loaded', len(data), 'images.                                 ')
 
 print('Loading labels.', end='\r')
-dataframe = pd.read_csv('D:/samochody/IMG0.csv', header=0)
+dataframe = pd.read_csv(directory_path + '/IMG0.csv', header=0)
 print('Loaded', len(dataframe), 'labels.                               ')
 
 #(x_train, y_train), (x_test, y_test) = keras.datasets.cifar10.load_data()
@@ -59,7 +60,7 @@ main_panel = tk.PanedWindow()
 main_panel.pack()
 canvas = tk.Canvas(main_panel)
 main_panel.add(canvas, width=width, height=height)
-img = Image.open('D:/samochody/IMG' + str(max_size + 1) + '.jpg').resize((width, height), Image.ANTIALIAS)
+img = Image.open(directory_path + '/IMG' + str(max_size + 1) + '.jpg').resize((width, height), Image.ANTIALIAS)
 img = ImageTk.PhotoImage(img)
 canvas.create_image(0, 0, anchor=tk.NW, image=img)
 canvas.create_rectangle(y_pred[0][0],
